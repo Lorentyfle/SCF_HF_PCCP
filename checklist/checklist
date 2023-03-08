@@ -1,0 +1,66 @@
+#What is done and to do?
+#   X = To do
+#   W = Working on it
+#   D = Done
+# (lax) = Can be late of 2/3 days.
+
+=> Input_file               X
+=> Read the input           X
+=> S matrix                 X
+=> S^(-1/2) matrix          X
+=> Compute hpq              X
+=> Compute (pq|rs)          X
+
+=> END PART 1               X
+
+Deadline = 14/03
+
+=> Compute Fock matrix      X
+=> Fock matrix Eigenvector  X
+=> Fock matrix Eigenvalues  X
+=> Density matrix           X
+=> Total energy E=2I+J      X (lax)
+=> Iteration                X (lax)
+
+=> END PART 2               X (lax)
+
+Deadline = 21/03
+
+=> Total energy E=2I+J      X
+=> Iteration                X
+
+=> END PART 2               X
+
+=> Compare values           X
+=> He+                      X
+=> New basis
+
+=> END Analysis results     X
+
+=> Input_file_multi_basis   X
+=> How many basis for       
+    HF lim?                 X
+
+=> END Bonus                X
+
+
+Deadline = 28/03
+
+=> Cover page               X   [1 page]
+=> Abstract                 X   [150 words]
+=> Intro                    X   [1 page]
+=> Methodology              X   [2 pages]
+=> Results                  X   [4 pages (max)]
+=> Conclusion               X   [1 page]
+=> Bibliography             X
+=> Appendices               X   [5 pages (max)]
+    (with description)
+=> Precisions :: Font=Times, Size=12, Spacing=1.5, Margins=2cm
+
+=> END V1 Rapport           X
+
+
+
+=> END LateX                X
+
+Deadline = 07/04
