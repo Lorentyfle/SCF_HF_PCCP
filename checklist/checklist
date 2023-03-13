@@ -4,8 +4,8 @@
 #   D = Done
 # (lax) = Can be late of 2/3 days.
 
-=> Input_file               X
-=> Read the input           X
+=> Input_file               D
+=> Read the input           D
 => S matrix                 X
 => S^(-1/2) matrix          X
 => Compute hpq              X

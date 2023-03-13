@@ -10,13 +10,19 @@
 # of the basis set.              ##
 ##-------------------------------##
 
+M
+2
 --Begin--
-M = 2
-alpha1=1.45
-alpha2=2.90
---SCF--
-cp1=1
-p=1
-cq1=0
-thr_SCF=1e-8
+1.45
+2.90
 --End--
+
+--SCF_Begin--
+p =
+1
+cp1 =
+1
+0
+thr_SCF =
+1e-8
+--SCF_End--
