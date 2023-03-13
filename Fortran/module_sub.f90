@@ -200,10 +200,10 @@ contains
         write(*,*) "SCF parameters:"
         write(*,*) "SCF threshold = ",thr
         do i = 1, size(cp1)
-            if (size(cp1) <= p) then
-                write(*,*) cp1(i), " <=  p ="
+            if (i <= p) then
+                write(*,*) cp1(i), " <=  (p =", p,")"
             else
-                write(*,*) cp1(i), " <= p =", p
+                write(*,*) cp1(i), " >   (p =", p,")"
             end if
         end do
         !write(*,*) p,cp1,thr,size_matrix,sent_coef
