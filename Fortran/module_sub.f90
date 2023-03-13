@@ -29,11 +29,19 @@ contains
         integer                 :: line_p,line_cp1,line_thr,line_matrix, line_data,line_data_end,have_matrix,line_prov
         integer                 :: max_file         = 100
         integer                 :: i
+        integer                 :: nlines
         !
         ! **************
         ! Find the datas
         ! **************
         open(1,file=input_fort,position="rewind")
+        !
+        nlines = 0
+        do
+            read(1,*,end=10)
+            nlines = nlines + 1
+        end do
+        10  rewind(1)
         !
         line_p = 0
         do while(sent_prov(1:max_file) /= sent_p1 .and. sent_prov(1:max_file) /= sent_p1_)
@@ -69,11 +77,11 @@ contains
 
         have_matrix = 0
         line_matrix = 0
-        do while(sent_prov(1:max_file) /= sent_matrix_size)
+        do while(sent_prov(1:max_file) /= sent_matrix_size .and. line_matrix < nlines)
             line_matrix = line_matrix + 1
             read(1,'(A)') sent_prov
             sent_prov = TRIM(sent_prov)
-            if ( sent_prov(1:max_file) /= sent_matrix_size) then
+            if ( sent_prov(1:max_file) == sent_matrix_size) then
                 have_matrix = 1
             end if
         end do
@@ -121,12 +129,12 @@ contains
             ! *********************
             rewind(1)
             ! *********************
-            size_matrix = line_data_end - line_data
+            size_matrix = line_data_end - (line_data+1)
         end if
         
 
         allocate(sent_coef(size_matrix))
-        
+
         line_prov = 0
         do i = 1, line_data+size_matrix
             if ( i < line_data+1 ) then
