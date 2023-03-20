@@ -19,7 +19,7 @@ Deadline = 14/03
 => Fock matrix Eigenvector  D
 => Fock matrix Eigenvalues  D
 => Density matrix           D
-=> Total energy E=2I+J      X (lax)
+=> Total energy E=2I+J      X (lax)     [The ENERGY IN THE FIRST STEP SEEMS STRANGE!]
 => Iteration                D (lax)
 => Density verif            X (lax)
 => Commutation verif        X (lax)
@@ -41,7 +41,7 @@ Deadline = 21/03
 
 => END Analysis results     X
 
-=> Input_file_multi_basis   X
+=> Input_file_multi_basis   D
 => How many basis for       
     HF lim?                 X
 
