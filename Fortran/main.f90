@@ -4,24 +4,24 @@ program main
     ! Declaration
     !%%%%%%%%%%%%%
 
-    use constant, only : sent_coef_Slater,size_matrix_Slater,p_SCF,cp1_SCF,thr_SCF
-    use input_HF_PCCP, only : read_data,write_coefficient,write_energy,write_intialisation
-	use diagonalization, only : hshtri, tqli, bubble_sort
+    use constant,       only : sent_coef_Slater,size_matrix_Slater,p_SCF,cp1_SCF,thr_SCF
+    use input_HF_PCCP,  only : read_data,write_coefficient,write_energy,write_intialisation
+    use diagonalization,only : hshtri, tqli, bubble_sort
     
     implicit none
+    
+    integer                                             :: M, i, j, k, l, atomic_charge,loop
+    double precision, dimension(:,:), allocatable       :: S, Z, T, Sbar, Sbar_minushalf, S_minushalf, T_trans, TMP, h
+    double precision, dimension(:), allocatable         :: alpha, e, diag, diag_sorted
+    integer, dimension(:), allocatable                  :: diag_id
 
-    integer :: M, i, j, k, l, atomic_charge
-    double precision, dimension(:,:), allocatable :: S, Z, T, Sbar, Sbar_minushalf, S_minushalf, T_trans, TMP, h
-    double precision, dimension(:), allocatable :: alpha, e, diag, diag_sorted
-    integer, dimension(:), allocatable :: diag_id
-
-    double precision :: sum_alpha, product_alpha, pairsum, pairsum_2, f1, f2, f3
-    double precision, dimension(:,:,:,:), allocatable :: pqrs
+    double precision                                    :: sum_alpha, product_alpha, pairsum, pairsum_2, f1, f2, f3
+    double precision, dimension(:,:,:,:), allocatable   :: pqrs
     double precision, dimension(:,:),allocatable        :: coefficients_Fock
     
-    integer :: loop
-    double precision :: E_tot,E_tot_old,Verif_Dens
+    double precision                                    :: E_tot,E_tot_old,Verif_Dens,E_consist
     double precision, dimension(:,:),allocatable        :: Fock_matrix, Fock_matrix_prime,Fock_matrix_prime_bar,Rpq,Density
+    double precision, dimension(:,:),allocatable        :: indempotency, commutation1,commutation2
     double precision, dimension(:,:),allocatable        :: C_Fock
     ! We take the datas from the files
     
@@ -46,7 +46,7 @@ program main
 
     allocate(S(M,M), Z(M,M), T(M,M), Sbar(M,M), Sbar_minushalf(M,M), S_minushalf(M,M), T_trans(M,M), TMP(M,M), h(M,M))
     allocate(alpha(M), e(M), diag(M), diag_sorted(M), diag_id(M))
-	allocate(pqrs(M,M,M,M))
+    allocate(pqrs(M,M,M,M))
 
     e = 0.0d0 ; diag = 0.0d0 ; diag_sorted = 0.0d0 ; diag_id = 0
     T = 0.0d0 ; Sbar = 0.0d0 ; Sbar_minushalf = 0.0d0 ; S_minushalf = 0.0d0 ; T_trans = 0.0d0
@@ -63,7 +63,7 @@ program main
                 S(i,j) = 1.0d0
             else if (i .ne. j) then
                 S(i,j) = dble((2*sqrt(alpha(i)*alpha(j))/(alpha(i)+alpha(j)))**3)
-	        end if
+            end if
         end do
     end do
 
@@ -121,7 +121,7 @@ program main
        Sbar_minushalf(i,i) = dble(1/(sqrt(Sbar(i,i))))
     end do
 	
-	write(*,*) 'Sbar^-1/2 (column format):'
+    write(*,*) 'Sbar^-1/2 (column format):'
     do i = 1, size(S,1)
        write(*,'(40f12.8)') (Sbar_minushalf(i,j), j=1, size(S,2))
     end do
@@ -145,7 +145,7 @@ program main
     ! h_pq integrals
     !%%%%%%%%%%%%%%%%
 
-	write(*,*) 'Computing numerical values of h_pq integrals:'
+    write(*,*) 'Computing numerical values of h_pq integrals:'
     do i = 1, M
         do j = 1, M
             sum_alpha = alpha(i) + alpha(j)
@@ -153,17 +153,17 @@ program main
             
             h(i,j) = 4 * dble(((sqrt(product_alpha)/sum_alpha)**3) * (product_alpha - atomic_charge*sum_alpha))
             
-		    write(*,*) "h_pq with p = ", i, "and q =", j
-		    write(*,'(40f12.8)') h(i,j)
+            write(*,*) "h_pq with p = ", i, "and q =", j
+            write(*,'(40f12.8)') h(i,j)
         end do
     end do
-	write(*,*)
+    write(*,*)
     
     !%%%%%%%%%%%%%%%%%%%
     ! (pq|rs) integrals
     !%%%%%%%%%%%%%%%%%%%
 
-	write(*,*) 'Computing numerical values of (pq|rs) integrals:'
+    write(*,*) 'Computing numerical values of (pq|rs) integrals:'
     do i = 1, M
         do j = 1, M
             do k = 1, M
@@ -177,9 +177,9 @@ program main
                     f2 = dble(1/((pairsum)**3 * (sum_alpha)**2))
                     f3 = dble(1/((pairsum)**2 * (sum_alpha)**3))
                 
-				    pqrs(i,j,k,l) = 32 * ((sqrt(product_alpha))**3 * (f1 - f2 - f3))
-				    write(*,*) "(pq|rs) with p = ", i, "q =", j, "r = ", k, "s = ", l
-				    write(*,'(40f12.8)') pqrs(i,j,k,l)
+                    pqrs(i,j,k,l) = 32 * ((sqrt(product_alpha))**3 * (f1 - f2 - f3))
+                    write(*,*) "(pq|rs) with p = ", i, "q =", j, "r = ", k, "s = ", l
+                    write(*,'(40f12.8)') pqrs(i,j,k,l)
                 end do
             end do
         end do
@@ -365,27 +365,59 @@ program main
         end do
         
         call write_coefficient(coefficients_Fock(:,1),loop)
-
-        ! Will be removed on the next commit. When the tests are ready.
-        if ( loop >= 100 ) then
-            write(*,*) "Emergency exit"
-            deallocate(Fock_matrix,Fock_matrix_prime,Fock_matrix_prime_bar,Rpq,Density)
-            exit
-        end if
     end do
 
     write(*,*) "The final energy is: ", E_tot
 
     ! Check consistency
+    
+    ! E = 2* epsilon_{1} - J_{11}
 
+    E_consist = 2*Fock_matrix_prime_bar(1,1)
+    do i = 1, M
+        do j = 1, M
+            do k = 1, M
+                do l = 1, M
+                    ! E not right, E_consist found is too low.
+                    E_consist = E_consist - (Rpq(i,1)*Rpq(j,1)*Rpq(k,1)*Rpq(l,1) * pqrs(i,j,k,l))
+                end do                
+            end do
+        end do
+    end do
+    !write(*,*) 2*Fock_matrix_prime_bar(1,1) !- (Rpq(1,1)*Rpq(2,1)* pqrs(1,1,1,1))
+    write(*,*) "E consist = ",E_consist
     ! Compute density matrix
-
+    write(*,*) "Rpq is:"
+    do i = 1, size(Rpq,1)
+        write(*,'(40f12.8)') (Rpq(i,j), j=1, size(Rpq,2))
+    end do
     ! Idempotency property
+    allocate(indempotency(M,M))
+    indempotency = matmul(Rpq,matmul(S,Rpq))
+    write(*,*) "="
+    do i = 1, size(indempotency,1)
+        write(*,'(40f12.8)') (indempotency(i,j), j=1, size(indempotency,2))
+    end do
+    write(*,*) "If equal we have idempotenty."
 
     ! Density and Fock matrix commutation
+    write(*,*) "Commutation property, FRS = SRF"
+    allocate(commutation1(M,M),commutation2(M,M))
+    commutation1 = matmul(Fock_matrix,matmul(Rpq,S))
+    commutation2 = matmul(S,matmul(Rpq,Fock_matrix))
+    write(*,*) "FRS ="
+    do i = 1, size(commutation1,1)
+        write(*,'(40f12.8)') (commutation1(i,j), j=1, size(commutation1,2))
+    end do
+    write(*,*) "SRF ="
+    do i = 1, size(commutation2,1)
+        write(*,'(40f12.8)') (commutation2(i,j), j=1, size(commutation2,2))
+    end do
+    deallocate(commutation2,commutation1,indempotency)
 
-    ! Write final energy output
-
+    ! %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    !   Write final energy output
+    ! %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     call write_energy(E_tot)
     
 
