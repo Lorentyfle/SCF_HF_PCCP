@@ -230,4 +230,100 @@ contains
         close(1)
         deallocate(sent_coef)
     end subroutine read_data
+
+    subroutine write_intialisation()
+        implicit none
+        character(len=19)       :: ofile
+        character(len=25)       :: restart_txt
+        integer                 :: nlines, end_file,i
+        character(len=24)       :: End_text     = "%--End_HF_Calculation--%"
+        character(len=25)       :: End_text_    = " %--End_HF_Calculation--%"
+
+        ofile = './output/output.txt'
+        open(2,file=ofile,position="rewind")
+        !
+        nlines = 0
+        do
+            read(2,*,end=12)
+            nlines = nlines + 1
+        end do
+        12  close(2)
+        !
+        if ( nlines - 1 > 0 ) then
+            end_file = nlines - 1
+            open(2,file=ofile)
+            do i = 1, end_file
+                read(2,*)
+            end do
+            read(2,"(A)") restart_txt
+            close(2)
+        else
+            end_file = 0
+            restart_txt = ""
+        end if
+        
+        restart_txt = trim(restart_txt)
+        if ( (restart_txt .eq. End_text) .or. (restart_txt .eq. End_text_) ) then
+                open(2,file=ofile,action='write',status='replace')
+            else
+                open(2,file=ofile,action='write',position='append')
+            end if
+            write(2,*) "=========================================="
+            close(2)
+            open(2,file=ofile,action='write',position='append')
+            write(2,*) "= Output of the Hartee Fock calculation  ="
+            write(2,*) "=========================================="
+            close(2)
+    end subroutine write_intialisation
+
+    subroutine write_coefficient(Coeff_write, loop)
+        use constant, only : size_matrix_Slater
+        implicit none
+        
+        double precision,dimension(size_matrix_Slater), intent(in) :: Coeff_write
+        integer,intent(in)      :: loop
+        integer                 :: i
+        character(len=19)       :: ofile
+        !
+        ! **************
+        ! Size matrix?
+        ! **************
+        !
+        ofile = './output/output.txt'
+        !
+            open(2,file=ofile,action='write',position='append')
+            write(2,*) "=========================================="
+            write(2,*) "Loop = ", loop
+            do i = 1, size_matrix_Slater
+                write(2,*) Coeff_write(i)
+            end do
+            close(2)
+    end subroutine write_coefficient
+
+    subroutine write_energy(Energy_write)
+        
+        implicit none
+
+        double precision, intent(in)    :: Energy_write
+        character(len=500)              :: ofile
+        !
+        ! **************
+        ! Size matrix?
+        ! **************
+        !
+        ofile = './output/output.txt'
+        open(2,file=ofile,action='write',position='append')
+        write(2,*) "============Converged_energy=============="
+        write(2,*) Energy_write
+        close(2)
+
+        ! Finish the file
+        open(2,file=ofile,action='write',position='append')
+        write(2,*) "====================================================="
+        write(2,*) "HF program coded by Alex Delhumeau and Timothee Jamin"
+        write(2,*) "====================================================="
+        write(2,*) "%--End_HF_Calculation--%"
+        close(2)
+    end subroutine write_energy
+
 end module input_HF_PCCP

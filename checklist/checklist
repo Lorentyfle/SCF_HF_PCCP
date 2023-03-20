@@ -1,4 +1,4 @@
-#What is done and to do?
+# What is done and to do?
 #   X = To do
 #   W = Working on it
 #   D = Done
@@ -6,28 +6,32 @@
 
 => Input_file               D
 => Read the input           D
-=> S matrix                 X
-=> S^(-1/2) matrix          X
-=> Compute hpq              X
-=> Compute (pq|rs)          X
+=> S matrix                 D
+=> S^(-1/2) matrix          D
+=> Compute hpq              D
+=> Compute (pq|rs)          D
 
-=> END PART 1               X
+=> END PART 1               D
 
 Deadline = 14/03
 
-=> Compute Fock matrix      X
-=> Fock matrix Eigenvector  X
-=> Fock matrix Eigenvalues  X
-=> Density matrix           X
+=> Compute Fock matrix      D
+=> Fock matrix Eigenvector  D
+=> Fock matrix Eigenvalues  D
+=> Density matrix           D
 => Total energy E=2I+J      X (lax)
-=> Iteration                X (lax)
+=> Iteration                D (lax)
+=> Density verif            X (lax)
+=> Commutation verif        X (lax)
 
 => END PART 2               X (lax)
 
 Deadline = 21/03
 
 => Total energy E=2I+J      X
-=> Iteration                X
+=> Iteration                D
+=> Density verif            X
+=> Commutation verif        X
 
 => END PART 2               X
 

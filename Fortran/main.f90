@@ -5,7 +5,7 @@ program main
     !%%%%%%%%%%%%%
 
     use constant, only : sent_coef_Slater,size_matrix_Slater,p_SCF,cp1_SCF,thr_SCF
-    use input_HF_PCCP, only : read_data
+    use input_HF_PCCP, only : read_data,write_coefficient,write_energy,write_intialisation
 	use diagonalization, only : hshtri, tqli, bubble_sort
     
     implicit none
@@ -32,6 +32,7 @@ program main
     write(*,*) "p_SCF", p_SCF
     write(*,*) "cp1_SCF", cp1_SCF
     write(*,*) "thr_SCF", thr_SCF
+    call write_intialisation()
 
     !%%%%%%%%%%%%%%%%
     ! Initialization
@@ -190,7 +191,7 @@ program main
 
     ! Setup
 
-    allocate(coefficients_Fock(M,M))
+    allocate(coefficients_Fock(M,1))
     write(*,*) "p_SCF", p_SCF
     write(*,*) "cp1_SCF", cp1_SCF
     write(*,*) "Matrix size", M
@@ -353,15 +354,40 @@ program main
             write(*,'(40f12.8)') (C_Fock(i,j), j=1, size(C_Fock,2))
         end do
 
-        if ( loop >= 1 ) then
+
+        write(*,*) "Edition of the starting coefficients"
+        do i = 1, M
+            coefficients_Fock(i,1) = C_Fock(i,1)
+        end do
+
+        do i = 1, size(coefficients_Fock,1)
+            write(*,'(40f12.8)') (coefficients_Fock(i,j), j=1, size(coefficients_Fock,2))
+        end do
+        
+        call write_coefficient(coefficients_Fock(:,1),loop)
+
+        ! Will be removed on the next commit. When the tests are ready.
+        if ( loop >= 100 ) then
             write(*,*) "Emergency exit"
             deallocate(Fock_matrix,Fock_matrix_prime,Fock_matrix_prime_bar,Rpq,Density)
             exit
         end if
     end do
 
+    write(*,*) "The final energy is: ", E_tot
 
+    ! Check consistency
 
+    ! Compute density matrix
+
+    ! Idempotency property
+
+    ! Density and Fock matrix commutation
+
+    ! Write final energy output
+
+    call write_energy(E_tot)
+    
 
 end program main
 
