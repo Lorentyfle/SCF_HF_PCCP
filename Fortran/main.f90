@@ -169,10 +169,13 @@ program main
 
                 f1 = dble(1/((pairsum)**3 * (pairsum_2)**2))
                 f2 = dble(1/((pairsum)**3 * (sum_alpha)**2))
-                f3 = dble(1/(pairsum)**2 * (sum_alpha)**3)
+                f3 = dble(1/((pairsum)**2 * (sum_alpha)**3))
                 
-				pqrs(i,j,k,l) = 32 * dble((sqrt(product_alpha))**3 * (f1 - f2 - f3))
-				
+				pqrs(i,j,k,l) = 32 * ((sqrt(product_alpha))**3 * (f1 - f2 - f3))
+				write(*,*) sum_alpha,pairsum,pairsum_2,product_alpha
+                write(*,*) f1,f2,f3
+                write(*,*) f1-f2-f3,(sqrt(product_alpha))**3
+                write(*,*) "I should have => ",32.d0 * (sqrt(product_alpha))**3 * (f1 - f2 - f3)
 				write(*,*) "(pq|rs) with p = ", i, "q =", j, "r = ", k, "s = ", l
 				write(*,'(40f12.8)') pqrs(i,j,k,l)
              end do
