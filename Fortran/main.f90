@@ -224,22 +224,35 @@ program main
     do while(abs(E_tot - E_tot_old) .gt. thr_SCF)
         loop = loop + 1
         ! Fock matrix elements
+        write(*,*) "Coefficient sent"
+        do i = 1, size(coefficients_Fock,1)
+            write(*,'(40f12.8)') (coefficients_Fock(i,j), j=1, 1)
+        end do
         do i = 1, M
             do j = 1, M
                 Fock_matrix(i,j) = h(i,j)
+                !if ( loop == 1 ) then
+                !    write(*,*) "h(i,j) =", Fock_matrix(i,j), h(i,j)
+                !end if
                 do k = 1, M
                     do l = 1, M
                         Fock_matrix(i,j) = Fock_matrix(i,j) + coefficients_Fock(k,1)*coefficients_Fock(l,1)*pqrs(i,j,k,l)
+                        !if ( loop == 1 ) then
+                        !    write(*,*) "k =",k, coefficients_Fock(k,1),"| l =",l,coefficients_Fock(l,1), &
+                        !    "| pqrs =" ,pqrs(i,j,k,l) ,"| F =", Fock_matrix(i,j)
+                        !end if
                     end do
                 end do
             end do
         end do
+        write(*,*) "Fock matrix"
         do i = 1, size(Fock_matrix,1)
             write(*,'(40f12.8)') (Fock_matrix(i,j), j=1, size(Fock_matrix,2))
         end do
         ! Fock eigenvector
         Fock_matrix_prime = matmul(S_minushalf,matmul(Fock_matrix,S_minushalf))
         
+        write(*,*) "F' = S^(-1/2)FS^(-1/2)"
         
         ! Fock diagonalisation
 
@@ -314,6 +327,13 @@ program main
             end do
         end do
 
+        write(*,*) "Rpq:"
+        do i = 1, size(Rpq,1)
+            write(*,'(40f12.8)') (Rpq(i,j), j=1, size(Rpq,2))
+        end do
+        write(*,*)
+
+
         Density= 2*Rpq
         write(*,*)
         write(*,*) "Density:"
@@ -336,13 +356,19 @@ program main
         ! E = sum^{M}_{p=1}(sum^{M}_{q=1}(C_p1 * C_q1 *(h_pq + F_pq)))
 
         E_tot_old = E_tot
-        E_tot = 0
+        E_tot = 0.0d0
         do i = 1, M
             do j = 1, M
-                E_tot = E_tot + Rpq(i,j) * (h(i,j) + Fock_matrix(i,j))
+                ! Papers: E_init = - 2.83308 | E_final = -2.86167
+                ! E_tot = E_tot + Rpq(i,1) * Rpq(j,1) * (h(i,j) + Fock_matrix(i,j)) ! E_final =~ -2.023296 (not logic)  | E_init = - 1.92495
+                !E_tot = E_tot + Rpq(i,j) * (h(i,j) + Fock_matrix(i,j))              ! E_final =~ -2.861672              | E_init = - 2.93938 (not logic)
+                E_tot = E_tot + coefficients_Fock(i,1)* coefficients_Fock(j,1) * (h(i,j) + Fock_matrix(i,j))    ! E_final = -2.8616715937556600 (logic) | E_init = -2.7912499999999998 (logic but don't follow the paper)
             end do
         end do
-
+        write(*,*) "c11 =", coefficients_Fock(1,1), "c21 =", coefficients_Fock(2,1)
+        write(*,*) "F11 =", Fock_matrix(1,1),"F12 =", Fock_matrix(1,2), "F22 =", Fock_matrix(2,2) 
+        ! After verification, all this values are correct for the 1st loop. (c11,c21,F11,F12,F22 and epsilon)
+        ! Only the total energy is different for the first loop.
         write(*,*) "The previous energy is: ",  E_tot_old
         write(*,*) "The actual energy is:",     E_tot
         write(*,*)
