@@ -21,23 +21,23 @@ Deadline = 14/03
 => Density matrix           D
 => Total energy E=2I+J      X (lax)     [The ENERGY IN THE FIRST STEP SEEMS STRANGE!]
 => Iteration                D (lax)
-=> Density verif            X (lax)
-=> Commutation verif        X (lax)
+=> Density verif            D (lax)
+=> Commutation verif        D (lax)
 
-=> END PART 2               X (lax)
+=> END PART 2               X (lax)		[Done except that E_Init is wrong(?)]
 
 Deadline = 21/03
 
-=> Total energy E=2I+J      X
+=> Total energy E=2e-J      X			[Value is wrong]
 => Iteration                D
-=> Density verif            X
-=> Commutation verif        X
+=> Density verif            D
+=> Commutation verif        D
 
-=> END PART 2               X
+=> END PART 2               X			[Done except that E_Consist is wrong]
 
 => Compare values           X
 => He+                      X
-=> New basis
+=> New basis				X
 
 => END Analysis results     X
 
