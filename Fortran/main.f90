@@ -10,21 +10,23 @@ program main
     
     implicit none
     
-    integer                                             :: M, i, j, k, l, atomic_charge,loop
+    integer                                             :: M, i, j, k, l, atomic_charge, loop
     double precision, dimension(:,:), allocatable       :: S, Z, T, Sbar, Sbar_minushalf, S_minushalf, T_trans, TMP, h
     double precision, dimension(:), allocatable         :: alpha, e, diag, diag_sorted
     integer, dimension(:), allocatable                  :: diag_id
 
-    double precision                                    :: sum_alpha, product_alpha, pairsum, pairsum_2, f1, f2, f3
+    double precision                                    :: sum_alpha, product_alpha, pairsum, pairsum_2, f1, f2, f3, I_1, J_11
     double precision, dimension(:,:,:,:), allocatable   :: pqrs
     double precision, dimension(:,:),allocatable        :: coefficients_Fock
     
-    double precision                                    :: E_tot,E_tot_old,Verif_Dens,E_consist
-    double precision, dimension(:,:),allocatable        :: Fock_matrix, Fock_matrix_prime,Fock_matrix_prime_bar,Rpq,Density
-    double precision, dimension(:,:),allocatable        :: indempotency, commutation1,commutation2
+    double precision                                    :: E_tot, E_tot_old, Verif_Dens, E_check, E_consist
+    double precision, dimension(:,:),allocatable        :: Fock_matrix, Fock_matrix_prime, Fock_matrix_prime_bar, Rpq, Density
+    double precision, dimension(:,:),allocatable        :: indempotency, commutation1, commutation2
     double precision, dimension(:,:),allocatable        :: C_Fock
+
     ! We take the datas from the files
-    
+    write(*,*) "Extracting input parameters from input.txt"
+    write(*,*)
     call read_data()
     write(*,*) "All the constant extracted from the .txt file, are:"
     write(*,*) "sent_coef_Slater", sent_coef_Slater
@@ -40,6 +42,7 @@ program main
 
     write(*,*)
     write(*,*) 'Initializing variables'
+    write(*,*)
 
     atomic_charge = 2
     M = size_matrix_Slater
@@ -73,7 +76,7 @@ program main
 
     write(*,*) 'S matrix to diagonalise:'
     do i = 1, M
-       write(*,'(100F10.4)') (S(i,j), j = 1, M)
+       write(*,'(40F12.8)') (S(i,j), j = 1, M)
     end do
     write(*,*)
 
@@ -190,14 +193,14 @@ program main
     !%%%%%%%%%%%%%%%
 
     write(*,*)
-    write(*,*) "Beginning iterative SCF"
+    write(*,*) "Setting up iterative SCF"
     
     ! Setup
     allocate(coefficients_Fock(M,1))
-    write(*,*) "p_SCF", p_SCF
-    write(*,*) "cp1_SCF", cp1_SCF
-    write(*,*) "Matrix size", M
-    write(*,*) "thr_SCF", thr_SCF
+    !write(*,*) "p_SCF", p_SCF
+    !write(*,*) "cp1_SCF", cp1_SCF
+    !write(*,*) "Matrix size", M
+    !write(*,*) "thr_SCF", thr_SCF
 
     ! Define initial guesses for Fock coefficients
     do i = 1, M
@@ -212,7 +215,7 @@ program main
     
     ! Write initial guesses for Fock coefficients
     write(*,*)
-    write(*,*) 'Initial values of the coefficients'
+    write(*,*) 'Initial values of the coefficients:'
     do i = 1, size(coefficients_Fock,1)
         write(*,'(40f12.8)') (coefficients_Fock(i,j), j=1, size(coefficients_Fock,2))
     end do
@@ -229,11 +232,17 @@ program main
     loop = 0
     
     do while(abs(E_tot - E_tot_old) .gt. thr_SCF)
+        write(*,*)
+        if (loop .eq. 0) then
+           write(*,*) "%%%%% Iterative SCF process has begun! %%%%%"
+        else
+           write(*,*) "%%%%% Entering a new loop! %%%%%"
+        end if
         loop = loop + 1
 
         ! Fock matrix elements
         write(*,*)
-        write(*,*) "loop", loop
+        write(*,*) "Loop", loop
         write(*,*) "Coefficients sent:"
         do i = 1, size(coefficients_Fock,1)
             write(*,'(40f12.8)') (coefficients_Fock(i,j), j=1, 1)
@@ -316,11 +325,10 @@ program main
         
         ! C = S^(-1/2)C'
         
-        !write(*,*) S_minushalf
-        !write(*,*) T
         C_Fock = matmul(S_minushalf,T)
+        write(*,*)
 
-        write(*,*) 'Eigenvectors of C:'
+        write(*,*) 'Eigenvectors of C (column format):'
         do i = 1, size(C_Fock,1)
            write(*,'(40f12.8)') (C_Fock(i,j), j=1, size(C_Fock,2))
         end do
@@ -336,7 +344,8 @@ program main
            write(*,'(40f12.8)') (Fock_matrix_prime_bar(i,j), j=1, size(Fock_matrix_prime_bar,2))
         end do
         write(*,*)
-        
+
+        ! epsilon_1 = -0.918164 (paper) |  epsilon_1 = -0.91816350674952829 (logic)
         write(*,*) "Lowest energy eigenvalue a.k.a. epsilon_1 = ", Fock_matrix_prime_bar(1,1)
         write(*,*)
 
@@ -377,52 +386,42 @@ program main
 
         write(*,*) "We have:", Verif_Dens, " =? ", atomic_charge 
 
-        !%%%%%%%%%%%%%%%%%%%%%%%%%
-        ! Total energy from eq. 9
-        !%%%%%%%%%%%%%%%%%%%%%%%%%
+        !%%%%%%%%%%%%%%%%%%%%%%%%%%
+        ! Total energy calculation
+        !%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        ! Formula for the energy
-        ! E = sum^{M}_{p=1}(sum^{M}_{q=1}(C_p1 * C_q1 *(h_pq + F_pq)))
+        ! Formula for the energy:
+        ! E = sum^{M}_{p=1}(sum^{M}_{q=1}(c_p1 * c_q1 *(h_pq + F_pq)))
 
         E_tot_old = E_tot
         E_tot = 0.0d0
         do i = 1, M
             do j = 1, M
-                ! Calculation needs to be properly done for logical results
 
-                ! not-logic attempt #1
-               
-                ! E_tot = E_tot + Rpq(i,1) * Rpq(j,1) * (h(i,j) + Fock_matrix(i,j))
-                ! E_final =~ -2.023296 (not logic)      | E_init = - 1.92495
+                ! Results from the reference papers Roetti and Clementi (see p. 2) and Snow and Bills (see p. 3):
+                ! E_final = -2.8616726                  | E_init = - 2.83308
 
-                ! not-logic attempt #2
-               
-                ! E_tot = E_tot + Rpq(i,j) * (h(i,j) + Fock_matrix(i,j))
-                ! E_final =~ -2.861672                  | E_init = - 2.93938 (not logic)
-
-                ! logic attempt #3
-               
                 E_tot = E_tot + coefficients_Fock(i,1) * coefficients_Fock(j,1) * (h(i,j) + Fock_matrix(i,j))
-                ! E_final = -2.8616715937556600 (logic) | E_init = -2.7912499999999998 (logic but don't follow the paper)
 
-                ! Results from the reference papers Snow and Bills (see p. 3):
-                ! E_final = -2.86167                    | E_init = - 2.83308 
+                ! E_final = -2.8616715937556600 (logic) | E_init = -2.7912499999999998 (logic but don't follow the paper)
+                 
             end do
         end do
 
         write(*,*)
-        ! write(*,*) "c11 =", coefficients_Fock(1,1), "c21 =", coefficients_Fock(2,1)
-        ! write(*,*) "F11 =", Fock_matrix(1,1),"F12 =", Fock_matrix(1,2), "F22 =", Fock_matrix(2,2) 
-        ! After verification, all this values are correct for the 1st loop. (c11,c21,F11,F12,F22 and epsilon)
-        ! Only the total energy is different for the first loop.
+        ! write(*,*) "c_11 =", coefficients_Fock(1,1), "c_21 =", coefficients_Fock(2,1)
+        ! write(*,*) "F_11 =", Fock_matrix(1,1), "F_12 =", Fock_matrix(1,2), "F_22 =", Fock_matrix(2,2) 
+        ! After verification, all this values are correct for the 1st loop. (c11, c21, F11, F12, F22, and epsilon)
+        ! Only the total energy is different for the *first* loop.
 
         ! Compare energies
         write(*,*) "The previous energy is: ",  E_tot_old
         write(*,*) "The actual energy is:",     E_tot
+		write(*,*) "The difference of energy is:", E_tot_old - E_tot, thr_SCF
         write(*,*)
 
         ! Compare Fock coefficients
-        write(*,*) "Previous Fock coefficients a.k.a. coefficients_Fock (column format):"
+        write(*,*) "Previous LCAO coefficients for phi_1 a.k.a. the first column of coefficients_Fock (column format):"
         do i = 1, size(coefficients_Fock,1)
             write(*,'(40f12.8)') (coefficients_Fock(i,j), j=1, size(coefficients_Fock,2))
         end do
@@ -440,6 +439,7 @@ program main
         do i = 1, M
             coefficients_Fock(i,1) = C_Fock(i,1)
         end do
+        write(*,*)
         
         !write(*,*) "New Fock coefficients (column format):"
         !do i = 1, size(coefficients_Fock,1)
@@ -448,6 +448,41 @@ program main
 
         ! Output actual coefficients to text file
         call write_coefficient(coefficients_Fock(:,1),loop)
+
+        ! I1 = sum^{M}_{p=1}(sum^{M}_{q=1}(c_pi * c_qi * h_11)
+
+        I_1 = 0.0d0
+        do i = 1, M
+           do j = 1, M
+              I_1 = I_1 + coefficients_Fock(i,1) * coefficients_Fock(j,1) * h(i,j)
+           end do
+        end do
+
+        write(*,*) "I_1 = ", I_1
+        write(*,*)
+
+        ! J11 = sum=i_1^M sum=i_1^M sum=i_1^M sum=i_1^M (c_p1 * c_q1 * c_r1 * c_s1 * (pq|rs))
+
+        J_11 = 0.0d0
+        do i = 1, M
+           do j = 1, M
+              do k = 1, M
+                 do l = 1, M
+                    J_11 = J_11 + (coefficients_Fock(i,1) * coefficients_Fock(j,1) &
+                         * coefficients_Fock(k,1) * coefficients_Fock(l,1) * pqrs(i,j,k,l))
+                 end do
+              end do
+           end do
+        end do
+
+        write(*,*) "J_11 = ", J_11
+        write(*,*)
+
+        ! Total energy with E = 2 * I_{1} + J_{11}
+
+        E_check = 2 * I_1 + J_11
+        write(*,*) "Check: E_check = ", E_check
+        
     end do
     write(*,*)
 
@@ -455,7 +490,8 @@ program main
     ! After SCF convergence
     !%%%%%%%%%%%%%%%%%%%%%%%
 
-    write(*,*) "Iterative SCF process has terminated."
+    write(*,*) "%%%%% Iterative SCF process has terminated! %%%%%"
+    write(*,*)
     write(*,*) "The final energy is: ", E_tot
 
     !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -465,26 +501,17 @@ program main
     ! E = 2* epsilon_{1} - J_{11}
 
     E_consist = 2 * Fock_matrix_prime_bar(1,1)
-    do i = 1, M
-        do j = 1, M
-            do k = 1, M
-                do l = 1, M
-                    ! E not right, E_consist found is too high,                E_consist = -2.3488957671479835
-                    ! E_consist = E_consist - (Rpq(i,1) * Rpq(j,1) * Rpq(k,1) * Rpq(l,1) * pqrs(i,j,k,l))
+    E_consist = E_consist - J_11
 
-                    ! This also doesn't work... but it's closer to working,    E_consist = -2.8236751900322368
-                    E_consist = E_consist - (coefficients_Fock(i,1) * coefficients_Fock(j,1) &
-                                * coefficients_Fock(k,2) * coefficients_Fock(l,2) * pqrs(i,j,k,l))
-                end do                
-            end do
-        end do
-    end do
-    !write(*,*) 2*Fock_matrix_prime_bar(1,1) !- (Rpq(1,1)*Rpq(2,1)* pqrs(1,1,1,1))
-    write(*,*) "Check: E consist = ", E_consist
+    write(*,*) "Check: E_consist = ", E_consist
+    write(*,*)
 
     !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ! Idempotency of density matrix
     !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    write(*,*) "Idempotency property:"
+    write(*,*)
     
     ! Compute density matrix
     write(*,*) "R matrix (column format):"
@@ -502,14 +529,15 @@ program main
         write(*,'(40f12.8)') (indempotency(i,j), j=1, size(indempotency,2))
     end do
     write(*,*)
-    write(*,*) "If equal we have idempotenty."
+    write(*,*) "If equal we have idempotency."
     write(*,*)
 
     !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ! Density and Fock matrix commutation
     !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    write(*,*) "Commutation property, FRS = SRF"
+    write(*,*) "Commutation property:"
+    write(*,*)
     allocate(commutation1(M,M),commutation2(M,M))
     commutation1 = matmul(Fock_matrix,matmul(Rpq,S))
     commutation2 = matmul(S,matmul(Rpq,Fock_matrix))
@@ -533,8 +561,12 @@ program main
 
     call write_energy(E_tot)
     
-    
-
+    ! Energy checks
+    write(*,*) "%%%%% Energy checks (temporary for debugging) %%%%%"
+    write(*,*)
+    write(*,*) "Total energy calculated from sum^{M}_{p=1}(sum^{M}_{q=1}(c_p1 * c_q1 *(h_pq + F_pq)):", E_tot
+    write(*,*) "Total energy calculated from 2 * I_1 + J_11:", E_check
+    write(*,*) "Total energy calculated from 2 * epsilon_1 - J_11:", E_consist
     
 end program main
 
