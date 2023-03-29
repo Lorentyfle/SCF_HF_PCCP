@@ -155,12 +155,12 @@ for i in range(len(Coeff1)):
         print("Security =", j, "Loop = ", loop)
         loop += 1
         # No loop security!!
-        if i == 1:
-            HF_out = open("./output/output_mesh.txt","a")
-            HF_out.write("STOP\n")
-            HF_out.close()
-            print("Emergency exit")
-            exit()
+        #if i == 1:
+        #    HF_out = open("./output/output_mesh.txt","a")
+        #    HF_out.write("STOP\n")
+        #    HF_out.close()
+        #    print("Emergency exit")
+        #    exit()
 
 
 HF_out = open("./output/output_mesh.txt","a")
