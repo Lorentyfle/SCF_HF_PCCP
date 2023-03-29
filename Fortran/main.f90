@@ -65,7 +65,7 @@ program main
             if (i .eq. j) then
                 S(i,j) = 1.0d0
             else if (i .ne. j) then
-                S(i,j) = dble((2*sqrt(alpha(i)*alpha(j))/(alpha(i)+alpha(j)))**3)
+                S(i,j) = dble((2.0d0*sqrt(alpha(i)*alpha(j))/(alpha(i)+alpha(j)))**3)
             end if
         end do
     end do
@@ -121,7 +121,7 @@ program main
     !%%%%%%%%%%%%%%%%%%%
     
     do i = 1, M
-       Sbar_minushalf(i,i) = dble(1/(sqrt(Sbar(i,i))))
+       Sbar_minushalf(i,i) = dble(1.0d0/(sqrt(Sbar(i,i))))
     end do
 	
     write(*,*) 'Sbar^-1/2 (column format):'
@@ -154,7 +154,7 @@ program main
             sum_alpha = alpha(i) + alpha(j)
             product_alpha = alpha(i) * alpha(j)
             
-            h(i,j) = 4 * dble(((sqrt(product_alpha)/sum_alpha)**3) * (product_alpha - atomic_charge*sum_alpha))
+            h(i,j) = 4.0d0 * dble(((sqrt(product_alpha)/sum_alpha)**3) * (product_alpha - atomic_charge*sum_alpha))
             
             write(*,*) "h_pq with p = ", i, "and q =", j
             write(*,'(40f12.8)') h(i,j)
@@ -176,11 +176,11 @@ program main
                     pairsum_2 = alpha(k) + alpha(l)
                     product_alpha = alpha(i) * alpha(j) * alpha(k) * alpha(l)
 
-                    f1 = dble(1/((pairsum)**3 * (pairsum_2)**2))
-                    f2 = dble(1/((pairsum)**3 * (sum_alpha)**2))
-                    f3 = dble(1/((pairsum)**2 * (sum_alpha)**3))
+                    f1 = dble(1.0d0/((pairsum)**3 * (pairsum_2)**2))
+                    f2 = dble(1.0d0/((pairsum)**3 * (sum_alpha)**2))
+                    f3 = dble(1.0d0/((pairsum)**2 * (sum_alpha)**3))
                 
-                    pqrs(i,j,k,l) = 32 * ((sqrt(product_alpha))**3 * (f1 - f2 - f3))
+                    pqrs(i,j,k,l) = 32.0d0 * dble((sqrt(product_alpha))**3 * (f1 - f2 - f3))
                     write(*,*) "(pq|rs) with p = ", i, "q =", j, "r = ", k, "s = ", l
                     write(*,'(40f12.8)') pqrs(i,j,k,l)
                 end do
@@ -227,8 +227,8 @@ program main
     ! Iterative SCF Process
     !%%%%%%%%%%%%%%%%%%%%%%%
     
-    E_tot = 0
-    E_tot_old = (E_tot+1)*5
+    E_tot = 0.0d0
+    E_tot_old = (E_tot+1.0d0)*5.0d0
     loop = 0
     
     do while(abs(E_tot - E_tot_old) .gt. thr_SCF)
@@ -369,7 +369,7 @@ program main
         end do
         write(*,*)
 
-        Density = 2 * Rpq
+        Density = 2.0d0 * Rpq
         
         write(*,*) "Density matrix (column format):"
         do i = 1, size(Density,1)
@@ -417,7 +417,7 @@ program main
         ! Compare energies
         write(*,*) "The previous energy is: ",  E_tot_old
         write(*,*) "The actual energy is:",     E_tot
-		write(*,*) "The difference of energy is:", E_tot_old - E_tot, thr_SCF
+        write(*,*) "The difference of energy is:", E_tot_old - E_tot, thr_SCF
         write(*,*)
 
         ! Compare Fock coefficients
@@ -480,7 +480,7 @@ program main
 
         ! Total energy with E = 2 * I_{1} + J_{11}
 
-        E_check = 2 * I_1 + J_11
+        E_check = 2.0d0 * I_1 + J_11
         write(*,*) "Check: E_check = ", E_check
         
     end do
@@ -500,7 +500,7 @@ program main
     
     ! E = 2* epsilon_{1} - J_{11}
 
-    E_consist = 2 * Fock_matrix_prime_bar(1,1)
+    E_consist = 2.0d0 * Fock_matrix_prime_bar(1,1)
     E_consist = E_consist - J_11
 
     write(*,*) "Check: E_consist = ", E_consist
@@ -556,6 +556,14 @@ program main
     deallocate(commutation2,commutation1,indempotency)
 
     !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ! Addition of the Koopman theorem
+    !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    ! EI = - h_{N} - sum^{N}_{j=1} (2J_{Nj} - K_{Nj}) = - epsilon_{HOMO}
+
+    ! We compare our eigenvalue with the experimental one: 0.904 (a.u.)
+
+    !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ! Write final energy output to text file
     !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -564,9 +572,9 @@ program main
     ! Energy checks
     write(*,*) "%%%%% Energy checks (temporary for debugging) %%%%%"
     write(*,*)
-    write(*,*) "Total energy calculated from sum^{M}_{p=1}(sum^{M}_{q=1}(c_p1 * c_q1 *(h_pq + F_pq)):", E_tot
-    write(*,*) "Total energy calculated from 2 * I_1 + J_11:", E_check
-    write(*,*) "Total energy calculated from 2 * epsilon_1 - J_11:", E_consist
+    write(*,"(A85,(1D30.20))") "Total energy calculated from sum^{M}_{p=1}(sum^{M}_{q=1}(c_p1 * c_q1 *(h_pq + F_pq)):", E_tot
+    write(*,"(A44,(1D30.20))") "Total energy calculated from 2 * I_1 + J_11:", E_check
+    write(*,"(A50,(1D30.20))") "Total energy calculated from 2 * epsilon_1 - J_11:", E_consist
     
 end program main
 

@@ -140,7 +140,9 @@ contains
             if ( i < line_data+1 ) then
                 read(1,'(A)')
             else
-                read(1,'(F10.64)') sent_coef(i-(line_data))
+                read(1,'(1D10.3)') sent_coef(i-(line_data))
+                write(*,'(1D10.3)') sent_coef(i-(line_data))
+                write(*,'(1F10.3)') sent_coef(i-(line_data))
             end if
         end do
         ! *********************
@@ -197,13 +199,13 @@ contains
         line_prov = 0
         ! We take the datas back
         backspace(1)
-        read(1,*) thr
+        read(1,"(1E14.10)") thr
 
         ! Test to see if all the values extracted are correct
         write(*,*) "Slater coefficients:"
         write(*,*) "We have ", size_matrix, " coefficients."
         do i = 1, size(sent_coef)
-            write(*,*) sent_coef(i)
+            write(*,'(1D10.3)') sent_coef(i)
         end do
         write(*,*) "SCF parameters:"
         write(*,*) "SCF threshold = ",thr
@@ -219,7 +221,7 @@ contains
         
 
         size_matrix_Slater  = size_matrix
-        sent_coef_Slater    = sent_coef
+        sent_coef_Slater    = dble(sent_coef)
         
 
         p_SCF               = p
