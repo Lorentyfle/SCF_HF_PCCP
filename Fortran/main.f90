@@ -235,6 +235,10 @@ program main
         write(*,*)
         if (loop .eq. 0) then
            write(*,*) "%%%%% Iterative SCF process has begun! %%%%%"
+        end if
+        if (loop .eq. 100) then
+            write(*,*) "%%%%% Emergency exit, last loop! %%%%%"
+            go to 10
         else
            write(*,*) "%%%%% Entering a new loop! %%%%%"
         end if
@@ -490,7 +494,7 @@ program main
     ! After SCF convergence
     !%%%%%%%%%%%%%%%%%%%%%%%
 
-    write(*,*) "%%%%% Iterative SCF process has terminated! %%%%%"
+    10 write(*,*) "%%%%% Iterative SCF process has terminated! %%%%%"
     write(*,*)
     write(*,*) "The final energy is: ", E_tot
 
@@ -575,6 +579,7 @@ program main
     write(*,"(A85,(1D30.20))") "Total energy calculated from sum^{M}_{p=1}(sum^{M}_{q=1}(c_p1 * c_q1 *(h_pq + F_pq)):", E_tot
     write(*,"(A44,(1D30.20))") "Total energy calculated from 2 * I_1 + J_11:", E_check
     write(*,"(A50,(1D30.20))") "Total energy calculated from 2 * epsilon_1 - J_11:", E_consist
+    write(*,*) "Threshold", thr_SCF
     
 end program main
 

@@ -9,7 +9,7 @@ contains
         ! ***************
         ! * Declaration *
         ! ***************
-        character(len=17)                        :: input_fort       = './input/input.txt'
+        character(len=17)            :: input_fort       = './input/input.txt'
         double precision, allocatable:: sent_coef(:)
         integer                      :: size_matrix
         integer                      :: p
@@ -26,7 +26,8 @@ contains
         character(len=3)        :: sent_p1_         = 'p ='
         character(len=8)        :: sent_thr         = 'thr_SCF='
         character(len=9)        :: sent_thr_        = 'thr_SCF ='
-        integer                 :: line_p,line_cp1,line_thr,line_matrix, line_data,line_data_end,have_matrix,line_prov
+        integer                 :: line_p,line_cp1,line_thr,line_data,line_data_end,line_matrix,line_prov
+        integer                 :: have_matrix
         integer                 :: max_file         = 100
         integer                 :: i
         integer                 :: nlines
@@ -199,7 +200,8 @@ contains
         line_prov = 0
         ! We take the datas back
         backspace(1)
-        read(1,"(1E14.10)") thr
+        read(1,*) thr
+        !read(1,"(1E14.10)") thr
 
         ! Test to see if all the values extracted are correct
         write(*,*) "Slater coefficients:"

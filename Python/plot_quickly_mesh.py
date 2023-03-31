@@ -75,6 +75,9 @@ for i in range(len(Files)):
         # Verification to skip the read
         if (len(words) == 0):
             continue
+        for j in range(len(words)):
+            if (words[j] == "nan"):
+                continue
         len_data_start= 0
         for j in range(min(len(Start_read_compute),len(words))):
             if (words[j] == Start_read_compute[j] and not Do_we_end and not Do_we_start):
@@ -102,9 +105,10 @@ for i in range(len(Files)):
 
         # Reading the data mess
         for j in range(Number_column):
-            if j == 0:
-                count_data += 1
-            Data_mess[i][j]               = append(Data_mess[i][j],float(words[j]))
+            if ((float(words[1]) >= 1.0 and float(words[1]) <= 3.0) or (float(words[2]) >= 1.0 and float(words[2]) <= 3.0)):
+                if j == 0:
+                    count_data += 1
+                Data_mess[i][j]               = append(Data_mess[i][j],float(words[j]))
             #print("words =",words,i,j)
             #print(Data_mess[i][j])
     f.close()
@@ -131,13 +135,13 @@ for i in range(len(Files)):
         label_used = ""
     else:
         label_used = labels[i]
-    
+        
     for j in range(count_data_tot[i]):
         x = append(x,Data_mess[i][Column_index[0]][j+all_data_count])
         y = append(y,Data_mess[i][Column_index[1]][j+all_data_count])
         z = append(z,Data_mess[i][Column_index[2]][j+all_data_count])
 
-        plt.scatter(x=x,y=y,c=z,s=20,alpha=0.9,marker=marker,label=label_used,vmax=max(z),vmin=min(z),cmap="plasma")
+        plt.scatter(x=x,y=y,c=z,s=20,alpha=0.9,marker=marker,label=label_used,vmax=max(z),vmin=min(z),cmap="nipy_spectral")
 
 #plt.xlim(0,2)
 #plt.ylim(0,2)
@@ -152,5 +156,6 @@ if (len(labels) != 0):
 plt.colorbar()
 
 plt.savefig(Name_save,format=save_format)
-plt.show()
+print("I am done!")
+#plt.show()
 plt.close(0)

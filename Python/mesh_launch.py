@@ -90,39 +90,45 @@ def print_energy(Energy,Coeff1,Coeff2):
 
 # Alpha values
 
-min_value   = 0.005 # If it's 0 we have nothing.
-max_value   = 2.74  # After this value program can't access the result
+min_value1   = 0.95
+max_value1   = 1.95
+min_value2   = 2.40
+max_value2   = 3.40
+
 
 alpha_central_value = [round(1.45,3),round(2.90,3)]
 
 Matrix_size         = len(alpha_central_value)
-Step_alpha          = 0.005
-Max_step            = max_value
+Step_alpha          = 0.01
+Max_step1           = max_value1
+Max_step2           = max_value2
 Time                = round((6*60+31.49)/117,3) #s => One simulation.
-Size_alpha          = int((Max_step)/(Step_alpha))
-
-
+Size_alpha1          = int((Max_step1-min_value1)/(Step_alpha))
+Size_alpha2          = int((Max_step2-min_value2)/(Step_alpha))
+print(Size_alpha1,Size_alpha1-max_value1,max_value1)
+print(Size_alpha2,Size_alpha2-max_value2,max_value2)
 # In case it's needed
-first_value_1       = min_value
-end_value_1         = max_value
-#first_value_2       = alpha_central_value[1]-Max_step
-#end_value_2         = alpha_central_value[1]+Max_step
+first_value_1       = min_value1
+end_value_1         = max_value1
+first_value_2       = min_value2
+end_value_2         = max_value2
 
 # Recode of linspace due to technical problems with numpy.
 Coeff1 = [round(first_value_1,3)]
-Coeff2 = [round(first_value_1,3)]
+Coeff2 = [round(first_value_2,3)]
 
-for i in range(Size_alpha-1):
+for i in range(Size_alpha1):
     Coeff1.append(round(Coeff1[i]+Step_alpha,3))
 
-for i in range(Size_alpha-1):
+for i in range(Size_alpha2):
     Coeff2.append(round(Coeff2[i]+Step_alpha,3))
 #######
 
 
 #print(Coeff1, Coeff2)
-print(Size_alpha)
-print("Boundary of the coeff:",round(min(Coeff1),3),round(max(Coeff1),3))
+print(Size_alpha1,Size_alpha2)
+print("Boundary of the coeff1:",round(min(Coeff1),3),round(max(Coeff1),3))
+print("Boundary of the coeff2:",round(min(Coeff2),3),round(max(Coeff2),3))
 #print("For coeff 2:",round(first_value_2,3),round(end_value_2,3))
 print(len(Coeff1),len(Coeff2))
 print("Time expected for the simulation")

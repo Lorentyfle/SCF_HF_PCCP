@@ -1,0 +1,59 @@
+ ==========================================
+ = Output of the Hartee Fock calculation  =
+ ==========================================
+ ==========================================
+ Loop =            1
+ Energy =   -2.7787500000000005      Hartree
+ Density verification =    2.0000000000000009     
+ Eigenvalue of the ground state =  -0.79649402803339719     
+ Energy difference =    2.7787500000000005     
+   1.1097707629019058     
+ -0.12486981702697431     
+ ==========================================
+ Loop =            2
+ Energy =   -2.8076804273898421      Hartree
+ Density verification =    1.9999999999999991     
+ Eigenvalue of the ground state =  -0.83339213228431475     
+ Energy difference =    2.8930427389841640E-002
+   1.0966757662190363     
+ -0.10978043439014129     
+ ==========================================
+ Loop =            3
+ Energy =   -2.8081035613652134      Hartree
+ Density verification =    2.0000000000000009     
+ Eigenvalue of the ground state =  -0.82893729680653028     
+ Energy difference =    4.2313397537130371E-004
+   1.0982411822112077     
+ -0.11158143295882028     
+ ==========================================
+ Loop =            4
+ Energy =   -2.8081095878979760      Hartree
+ Density verification =    2.0000000000000018     
+ Eigenvalue of the ground state =  -0.82946915566099744     
+ Energy difference =    6.0265327626041199E-006
+   1.0980540591740766     
+ -0.11136610906954070     
+ ==========================================
+ Loop =            5
+ Energy =   -2.8081096740442115      Hartree
+ Density verification =    1.9999999999999998     
+ Eigenvalue of the ground state =  -0.82940556963272916     
+ Energy difference =    8.6146235478423705E-008
+   1.0980764272780013     
+ -0.11139184763877530     
+ ==========================================
+ Loop =            6
+ Energy =   -2.8081096752750998      Hartree
+ Density verification =    1.9999999999999993     
+ Eigenvalue of the ground state =  -0.82941317036648132     
+ Energy difference =    1.2308882801903565E-009
+   1.0980737534678084     
+ -0.11138877092591382     
+ ============Converged_energy==============
+  -2.8081096752750998     
+ ==========Converged_eigenvalue============
+ -0.82941317036648132     
+ =====================================================
+ HF program coded by Alex Delhumeau and Timothee Jamin
+ =====================================================
+ %--End_HF_Calculation--%
