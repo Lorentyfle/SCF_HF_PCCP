@@ -25,5 +25,5 @@ cp1 =
 1
 0
 thr_SCF =
-1e-15
+1e-8
 --SCF_End--
