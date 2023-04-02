@@ -1,0 +1,55 @@
+###################################
+##           Input file          ##
+###################################
+
+##-------------------------------##
+##M is the dimension of the basis##
+###################################
+<<<<<<< Updated upstream:Fortran/input/input_default.txt
+##We need as many Slater         ## 
+=======
+##We need as many Slater         ##
+>>>>>>> Stashed changes:Fortran_M=7 works/input/input_default.txt
+# coefficients as the dimension  ##
+# of the basis set.              ##
+##-------------------------------##
+
+M
+<<<<<<< Updated upstream:Fortran/input/input_default.txt
+2
+--Begin--
+1.45
+2.90
+=======
+7
+--Begin--
+1.0
+1.2
+1.44
+1.728
+2.0736
+2.48832
+2.985984
+
+>>>>>>> Stashed changes:Fortran_M=7 works/input/input_default.txt
+--End--
+
+--SCF_Begin--
+p =
+1
+cp1 =
+1
+0
+thr_SCF =
+<<<<<<< Updated upstream:Fortran/input/input_default.txt
+1e-12
+--SCF_End--
+=======
+<<<<<<<< Updated upstream:Fortran/input/input.txt
+1e-8
+--SCF_End--
+========
+1e-12
+--SCF_End--
+>>>>>>>> Stashed changes:Fortran_M=7 works/input/input_default.txt
+>>>>>>> Stashed changes:Fortran_M=7 works/input/input_default.txt
