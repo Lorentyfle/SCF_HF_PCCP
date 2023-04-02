@@ -5,18 +5,16 @@
 ##-------------------------------##
 ##M is the dimension of the basis##
 ###################################
-##We need as many Slater         ##
+##We need as many Slater         ## 
 # coefficients as the dimension  ##
 # of the basis set.              ##
 ##-------------------------------##
 
 M
-4
+2
 --Begin--
-1.0
-1.2
-1.44
-1.728
+1.45
+2.90
 --End--
 
 --SCF_Begin--
@@ -26,5 +24,5 @@ cp1 =
 1
 0
 thr_SCF =
-1e-8
+1e-15
 --SCF_End--

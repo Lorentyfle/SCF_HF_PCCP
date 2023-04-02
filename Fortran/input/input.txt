@@ -5,16 +5,22 @@
 ##-------------------------------##
 ##M is the dimension of the basis##
 ###################################
-##We need as many Slater         ## 
+##We need as many Slater         ##
 # coefficients as the dimension  ##
 # of the basis set.              ##
 ##-------------------------------##
 
 M
-2
+7
 --Begin--
-1.45
-2.90
+1.0
+1.2
+1.44
+1.728
+2.0736
+2.48832
+2.985984
+
 --End--
 
 --SCF_Begin--
