@@ -1,0 +1,28 @@
+###################################
+##           Input file          ##
+###################################
+
+##-------------------------------##
+##M is the dimension of the basis##
+###################################
+##We need as many Slater         ##
+# coefficients as the dimension  ##
+# of the basis set.              ##
+##-------------------------------##
+
+M
+2
+--Begin--
+1.45
+2.90
+--End--
+
+--SCF_Begin--
+p =
+1
+cp1 =
+1
+0
+thr_SCF =
+1.0E-8
+--SCF_End--
