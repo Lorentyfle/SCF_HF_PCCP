@@ -17,7 +17,7 @@ p =         <= Any modification isn't recommanded.
 cp1 =
 1           <= Value of the coefficient if we are at a rank <= p
 0           <= Value of the coefficient if we are at a rank > p
-thr_SCF =   <= It's to be noted that if the value exceed 1e-9, the threshold read will not be exact. Please, refer to the threshold outputed to be certain of the precision of the SCF.
+thr_SCF =   <= It's to be noted that if the value is smaller than 1e-9, the threshold read will not be exact. Please, refer to the threshold outputed to be certain of the precision of the SCF.
 1.0E-8      <= Value of the threshold in scientific notation.
 --SCF_End--
 
